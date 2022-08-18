@@ -1,0 +1,11 @@
+npm init -y
+npm install puppeteer
+npm install typescript --save-dev
+npm install swc --save-dev
+npm install ts-node --save-dev
+npm install cross-env --save-dev
+npm install nodemon --save-dev
+npm install tsconfig-paths --save-dev
+npm install dotenv
+npm install envalid
+reflect-metadata
