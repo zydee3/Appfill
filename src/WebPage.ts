@@ -20,7 +20,7 @@ export const DEFAULT_ELEMENT_OPTIONS: Partial<IPageElementOptions> = { shouldCli
 export class WebPage {
     public browser: Browser
     public page: Page
-    public sequentialSelectors: string[][]
+    public targetButtons: string[][]
 
     // WebPage Defaults
     public init = init

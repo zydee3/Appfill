@@ -30,9 +30,14 @@ async function setPage(webPage: WebPage) {
 }
 
 async function setParams(page: WebPage) {
-    const selPath: string = path.join(process.cwd(), 'data/selectors.json')
+    const selPath: string = path.join(process.cwd(), 'data/button-targets.json')
     const selectors: string = await fs.readFile(selPath, { encoding: 'utf-8' })
-    page.sequentialSelectors = JSON.parse(selectors)
+
+    page.targetButtons = []
+
+    for (const element of JSON.parse(selectors)) {
+        page.targetButtons.push(element.target)
+    }
 }
 
 export async function init(this: WebPage) {

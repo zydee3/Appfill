@@ -1,0 +1,7 @@
+[
+    {
+        "domain": "myworkdayjobs.com",
+        "target": ["[data-automation-id=\"adventureButton\"]", "[data-automation-id=\"applyManually\"]"]
+    }
+    
+]
