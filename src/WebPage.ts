@@ -1,9 +1,9 @@
 import { sleep } from './Utils/Sleep'
 import { Browser, ElementHandle, Page } from 'puppeteer'
-import { readInputFields } from './Handlers/WebPageParsers'
+import { getElement, getElements, getLabels } from './Handlers/WebPageParsers'
 import { clickElement, sendTextToElement } from './Handlers/WebPageActions'
-import { init, setBrowser, setPage, setParams } from './Handlers/WebPageDefault'
-import { checkForms, checkButtons } from './Handlers/WebPageRunner'
+import { init } from './Handlers/WebPageDefault'
+import { start } from './Handlers/WebPageRunner'
 
 interface IWebPageOptions {
     baseURL: string
@@ -24,18 +24,16 @@ export class WebPage {
 
     // WebPage Defaults
     public init = init
-    public setBrowser = setBrowser
-    public setPage = setPage
-    public setParams = setParams
 
     // WebPage Runner
-    public checkForms = checkForms
-    public checkButtons = checkButtons
+    public start = start
 
     // WebPage Actions
     public clickElement = clickElement
     public sendTextToElement = sendTextToElement
 
-    // WebPage
-    public readInputFields = readInputFields
+    // WebPage Parsers
+    public getElement = getElement
+    public getElements = getElements
+    public getLabels = getLabels
 }
