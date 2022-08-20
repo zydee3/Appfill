@@ -1,21 +1,8 @@
-import { sleep } from './Utils/Sleep'
-import { Browser, ElementHandle, Page } from 'puppeteer'
+import { Browser, Page } from 'puppeteer'
 import { getElement, getElements, getLabels } from './Handlers/WebPageParsers'
-import { clickElement, sendTextToElement } from './Handlers/WebPageActions'
+import { focusElement, sendTextToElement } from './Handlers/WebPageActions'
 import { init } from './Handlers/WebPageDefault'
 import { start } from './Handlers/WebPageRunner'
-
-interface IWebPageOptions {
-    baseURL: string
-}
-
-export interface IPageElementOptions {
-    tag: string
-    shouldWait?: boolean
-    shouldClick?: boolean
-}
-
-export const DEFAULT_ELEMENT_OPTIONS: Partial<IPageElementOptions> = { shouldClick: false, shouldWait: false }
 
 export class WebPage {
     public browser: Browser
@@ -29,7 +16,7 @@ export class WebPage {
     public start = start
 
     // WebPage Actions
-    public clickElement = clickElement
+    public focusElement = focusElement
     public sendTextToElement = sendTextToElement
 
     // WebPage Parsers
