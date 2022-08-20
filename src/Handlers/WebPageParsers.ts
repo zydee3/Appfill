@@ -7,10 +7,10 @@ import { WebElement } from '@/Meta/WebElement'
  *
  * @export
  * @async
- * @param {(ElementHandle<Element> | Page)} ref Element to run querySelector on.
+ * @param {(ElementHandle<Element> | Page)} ref element to run {@link document.querySelector} on.
  * @param {string} tag property to be queried for.
  * @param {boolean} shouldWait determines if the function should block until the element is present in the dom.
- * @returns {Promise<WebElement>} queried WebElement (WebElement wraps ElementHandle<Element>)
+ * @returns {Promise<WebElement>} queried {@link WebElement}, a wrapper for {@link ElementHandle}).
  */
 export async function getElement(ref: ElementHandle<Element> | Page, tag: string, shouldWait: boolean): Promise<WebElement> {
     const element: ElementHandle<Element> = shouldWait ? await ref.waitForSelector(tag) : await ref.$(tag)
@@ -24,7 +24,7 @@ export async function getElement(ref: ElementHandle<Element> | Page, tag: string
  * @async
  * @param {Page} page instance of {@link Page}.
  * @param {string} property tag property to be queried for.
- * @returns {Promise<WebElement[]>} queried WebElements ({@link WebElement} wraps {@link ElementHandle})
+ * @returns {Promise<WebElement[]>} queried WebElements, an array of a wrapper for {@link ElementHandle}).
  */
 export async function getElements(page: Page, property: string): Promise<WebElement[]> {
     const rawElements: ElementHandle<Element>[] = await page.$$(property)
@@ -37,7 +37,7 @@ export async function getElements(page: Page, property: string): Promise<WebElem
  *
  * @export
  * @async
- * @param {Page} pageinstance of Puppeteer.page.
+ * @param {Page} pageinstance of {@link Page}.
  * @returns {Promise<{ text: string; for: string }[]>} an array of json objects containing the inner text
  * and "for" target of queiried elements containing the "for" attribute. An empty array is present if
  * no elements were found with the "for" attribute.

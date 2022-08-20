@@ -22,7 +22,7 @@ async function parsePage(webPage: WebPage) {
     }
 
     for (const label of await webPage.getLabels(page)) {
-        console.log(`question: ${label.question} for: ${label.for}`)
+        console.log(`question: ${label.text} for: ${label.for}`)
     }
 
     for (const button of await webPage.getElements(page, Env.BUTTON_TAGS)) {
