@@ -1,7 +1,18 @@
 [
     {
         "domain": "myworkdayjobs.com",
-        "target": ["[data-automation-id=\"adventureButton\"]", "[data-automation-id=\"applyManually\"]"]
+        "sequence_buttons": [
+            {
+                "parent_key": "data-automation-id",
+                "parent_value": "adventureButton",
+                "children": [
+                    "[data-automation-id=\"applyManually\"]"
+                ]
+            }
+        ]
+    },
+    {
+        "domain": "*",
+        "sequence_buttons": []
     }
-    
 ]

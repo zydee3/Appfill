@@ -1,3 +1,4 @@
+import { WebElement } from '@/Meta/WebElement'
 import { ElementHandle } from 'puppeteer'
 import { WebPage } from '../WebPage'
 
@@ -10,10 +11,9 @@ import { WebPage } from '../WebPage'
  * @param {ElementHandle<Element>} element {@link Element} to be focused on.
  * @returns {Promise<boolean>} true if the element was successfully clicked, otherwise false.
  */
-export async function focusElement(this: WebPage, element: ElementHandle<Element>): Promise<boolean> {
-    let e: Element
+export async function focusElement(this: WebPage, element: WebElement): Promise<boolean> {
     if (element) {
-        element.click()
+        element.ref.click()
         return true
     }
 
@@ -30,7 +30,7 @@ export async function focusElement(this: WebPage, element: ElementHandle<Element
  * @param {string} data string to be typed into the input field.
  * @returns {Promise<boolean>} true if the element was successfully typed to, otherwise false.
  */
-export async function sendTextToElement(this: WebPage, formElement: ElementHandle<Element>, data: string): Promise<boolean> {
+export async function sendTextToElement(this: WebPage, formElement: WebElement, data: string): Promise<boolean> {
     if (await this.focusElement(formElement)) {
         await this.page.keyboard.type(data)
         return true

@@ -15,4 +15,5 @@ export const Env = cleanEnv(process.env, {
     BUTTON_TAGS: str(),
     INPUT_TAGS: str(),
     LABEL_TAGS: str(),
+    NAV_TAGS: str(),
 })

@@ -2,14 +2,16 @@ import { WebPage } from '@/WebPage'
 import { ElementHandle, JSHandle, Page } from 'puppeteer'
 
 export class WebElement {
-    private ref: ElementHandle<Element>
+    public ref: ElementHandle<Element>
     private properties: Map<string, string>
+    private attributes: Map<string, string> // should prob just be an array of "key=value"
     private type: string
 
     constructor(ref: ElementHandle<Element>) {
         if (ref) {
             this.ref = ref
             this.properties = new Map()
+            this.attributes = new Map()
         } else {
             console.log('null reference in WebElement')
         }
@@ -23,7 +25,8 @@ export class WebElement {
         if (!this.ref) return ''
         // const wrapper: JSHandle<unknown> = await this.ref.getProperty(property)
         const wrapper: JSHandle<unknown> = await this.ref.getProperty(property)
-        return (await wrapper.jsonValue()) as string
+        const value = (await wrapper.jsonValue()) as string
+        return value ? value : ''
     }
 
     public async getProperty(key: string): Promise<string> {
@@ -34,7 +37,19 @@ export class WebElement {
             this.properties.set(key, value)
         }
 
-        return value ? value : ''
+        return value
+    }
+
+    public async getAttribute(page: Page, key: string): Promise<string> {
+        let value: string = this.attributes.get(key)
+
+        if (!value) {
+            value = await page.evaluate((element, tag) => element.getAttribute(tag), this.ref, key)
+            value = value ? value : ''
+            this.attributes.set(key, value)
+        }
+
+        return value
     }
 
     public async getParent(): Promise<WebElement> {
@@ -111,5 +126,10 @@ export class WebElement {
         const existingEntry: string = this.properties.get(key)
         this.properties.delete(key)
         return existingEntry
+    }
+
+    public async getPartiallyUniqueID(): Promise<string> {
+        const id: string = await this.getProperty('id')
+        return id !== '' ? id : await this.getProperty('innerText')
     }
 }

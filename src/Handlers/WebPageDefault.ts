@@ -4,6 +4,7 @@ import fs from 'fs/promises'
 import { Env } from '@/Env'
 import { WebPage } from '@/WebPage'
 import puppeteer, { Page } from 'puppeteer'
+import { NavButton, NavSequence } from '@/WebPage'
 
 /**
  * Initializes a single {@link Browser} instance and assigns it to {@link WebPage}.browser.
@@ -50,10 +51,10 @@ async function setParams(page: WebPage) {
     const selPath: string = path.join(process.cwd(), 'data/button-targets.json')
     const selectors: string = await fs.readFile(selPath, { encoding: 'utf-8' })
 
-    page.targetButtons = []
+    page.navButtons = []
 
     for (const element of JSON.parse(selectors)) {
-        page.targetButtons.push(element.target)
+        page.navButtons.push(element)
     }
 }
 

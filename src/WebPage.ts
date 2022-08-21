@@ -2,18 +2,31 @@ import { Browser, Page } from 'puppeteer'
 import { getElement, getElements, getLabels } from './Handlers/WebPageParsers'
 import { focusElement, sendTextToElement } from './Handlers/WebPageActions'
 import { init } from './Handlers/WebPageDefault'
-import { start } from './Handlers/WebPageRunner'
+import { checkState, start } from './Handlers/WebPageRunner'
+
+export type NavSequence = {
+    parent_key: string
+    parent_value: string
+    children: string[]
+}
+
+export type NavButton = {
+    domain: string
+    sequence_buttons: NavSequence[]
+}
 
 export class WebPage {
     public browser: Browser
     public page: Page
-    public targetButtons: string[][]
+    public url: string
+    public navButtons: NavButton[]
 
     // WebPage Defaults
     public init = init
 
     // WebPage Runner
     public start = start
+    public checkState = checkState
 
     // WebPage Actions
     public focusElement = focusElement
