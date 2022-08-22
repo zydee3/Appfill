@@ -29,7 +29,7 @@ async function setBrowser(page: WebPage) {
  * @returns {Promise<void>}
  */
 async function setPage(webPage: WebPage) {
-    const pages: Page[] = await webPage.browser.pages()
+    const pages: Array<Page> = await webPage.browser.pages()
     const page: Page = pages[0]
 
     await page.setViewport({
