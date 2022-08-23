@@ -13,7 +13,7 @@ import { WebPage } from '../WebPage'
  */
 export async function focusElement(this: WebPage, element: WebElement): Promise<boolean> {
     if (element) {
-        element.ref.click()
+        await element.ref.click()
         return true
     }
 

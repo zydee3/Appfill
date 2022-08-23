@@ -1,8 +1,7 @@
-import { WebPage } from '@/WebPage'
 import { ElementHandle, JSHandle, Page } from 'puppeteer'
 
 /**
- * Description placeholder
+ * A wrapper for {@link ElementHandle<Element>} to provide parsing functionality.
  *
  * @export
  * @class WebElement
@@ -10,33 +9,26 @@ import { ElementHandle, JSHandle, Page } from 'puppeteer'
  */
 export class WebElement {
     /**
-     * Description placeholder
+     * Stored reference to {@link ElementHandle}.
      *
      * @public
      * @type {ElementHandle<Element>}
      */
     public ref: ElementHandle<Element>
     /**
-     * Description placeholder
+     * A record of all previously parsed properties of {@link ElementHandle}.
      *
      * @private
      * @type {Map<string, string>}
      */
     private properties: Map<string, string>
     /**
-     * Description placeholder
+     * A record of all previously parsed aattributes of {@link ElementHandle}.
      *
      * @private
      * @type {Map<string, string>}
      */
     private attributes: Map<string, string>
-    /**
-     * Description placeholder
-     *
-     * @private
-     * @type {string}
-     */
-    private type: string
 
     /**
      * Creates an instance of WebElement.
@@ -54,25 +46,34 @@ export class WebElement {
         }
     }
 
+    public async init(page: Page, props: Array<string>, attr: Array<string>) {
+        props.forEach((property) => this.getProperty(property))
+        attr.forEach((attribute) => this.getAttribute(page, attribute))
+    }
+
     /**
-     * Description placeholder
+     * Converts Array<{@link ElementHandle<Element>}> to
+     * Array<{@link WebElement}>.
      *
      * @public
      * @static
-     * @param {Array<ElementHandle<Element>>} rawElements
-     * @returns {Array<WebElement>}
+     * @param {Array<ElementHandle<Element>>} rawElements elements to be
+     * converted.
+     * @returns {Array<WebElement>} an array of the converted elements.
      */
     public static fromSource(rawElements: Array<ElementHandle<Element>>): Array<WebElement> {
         return rawElements.map((rawElement) => new WebElement(rawElement))
     }
 
     /**
-     * Description placeholder
+     * From {@link ref}, returns the property string value associated to
+     * {@param property} or empty string if no such property exists.
      *
      * @private
      * @async
-     * @param {string} property
-     * @returns {Promise<string>}
+     * @param {string} property target property name of {@link ref}
+     * @returns {Promise<string>} target property value of {@link ref} or empty
+     * string if {@link ref} does not contain {@param property}.
      */
     private async extractProperty(property: string): Promise<string> {
         if (!this.ref) {
@@ -85,12 +86,16 @@ export class WebElement {
     }
 
     /**
-     * Description placeholder
+     * Retrieves the string property value associated to {@param key} by
+     * checking if {@link properties} contains {@param key}. If no,
+     * {@link fromSource()} is called and the result is cached. The cached
+     * result is returned.
      *
      * @public
      * @async
-     * @param {string} key
-     * @returns {Promise<string>}
+     * @param {string} key target property name of {@link ref}
+     * @returns {Promise<string>} target property value of {@link ref} or empty
+     * string if {@link ref} does not contain {@param property}.
      */
     public async getProperty(key: string): Promise<string> {
         let value: string = this.properties.get(key)
@@ -104,13 +109,15 @@ export class WebElement {
     }
 
     /**
-     * Description placeholder
+     * Retrieves the string attribute value associated to {@param key} by
+     * evaluating {@param page} if {@link attributes} does not contain
+     * @{param key}. The cached result is cach caching the result.
      *
      * @public
      * @async
-     * @param {Page} page
-     * @param {string} key
-     * @returns {Promise<string>}
+     * @param {string} key target property name of {@link ref}
+     * @returns {Promise<string>} target property value of {@link ref} or empty
+     * string if {@link ref} does not contain {@param property}.
      */
     public async getAttribute(page: Page, key: string): Promise<string> {
         let value: string = this.attributes.get(key)

@@ -2,12 +2,12 @@ import path from 'path'
 import fs from 'fs/promises'
 
 import { Env } from '@/Env'
-import { WebPage } from '@/WebPage'
+import { MappedFormElement, WebPage } from '@/WebPage'
 import puppeteer, { Page } from 'puppeteer'
-import { NavButton, NavSequence } from '@/WebPage'
 
 /**
- * Initializes a single {@link Browser} instance and assigns it to {@link WebPage}.browser.
+ * Initializes a single {@link Browser} instance and assigns it to
+ * {@link WebPage}.browser.
  *
  * @async
  * @param {WebPage} page instance of {@link WebPage}.
@@ -22,7 +22,8 @@ async function setBrowser(page: WebPage) {
 }
 
 /**
- * Initializes a single {@link Page} instance and assigns it to {@link WebPage}.page.
+ * Initializes a single {@link Page} instance and assigns it to
+ * {@link WebPage}.page.
  *
  * @async
  * @param {WebPage} webPage instance of {@link WebPage}.
@@ -51,10 +52,10 @@ async function setParams(page: WebPage) {
     const selPath: string = path.join(process.cwd(), 'data/button-targets.json')
     const selectors: string = await fs.readFile(selPath, { encoding: 'utf-8' })
 
-    page.navButtons = []
+    page.targetNavButtons = []
 
     for (const element of JSON.parse(selectors)) {
-        page.navButtons.push(element)
+        page.targetNavButtons.push(element)
     }
 }
 
@@ -70,4 +71,7 @@ export async function init(this: WebPage): Promise<void> {
     await setBrowser(this)
     await setPage(this)
     await setParams(this)
+
+    this.handledButtons = new Set<string>()
+    this.mappedElements = new Map<string, MappedFormElement>()
 }

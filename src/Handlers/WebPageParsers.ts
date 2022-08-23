@@ -1,6 +1,7 @@
 import { Env } from '../Env'
 import { ElementHandle, Page } from 'puppeteer'
 import { WebElement } from '@/Meta/WebElement'
+import { WebPage } from '@/WebPage'
 
 export type WebLabelElement = {
     text: string
@@ -21,15 +22,13 @@ export type WebLabelElement = {
  * @returns {Promise<WebElement>} queried {@link WebElement}, a wrapper for
  * {@link ElementHandle}).
  */
-export async function getElement(
-    ref: ElementHandle<Element> | Page,
-    tag: string,
-    shouldWait: boolean,
-): Promise<WebElement> {
-    const element: ElementHandle<Element> = shouldWait
-        ? await ref.waitForSelector(tag)
+export async function getElement(ref: ElementHandle<Element> | Page, tag: string, shouldWait: boolean): Promise<WebElement> {
+    const element: ElementHandle<Element> = shouldWait 
+        ? await ref.waitForSelector(tag) 
         : await ref.$(tag)
-    return ref ? new WebElement(element) : undefined
+    return ref 
+        ? new WebElement(element) 
+        : undefined
 }
 
 /**
@@ -44,10 +43,7 @@ export async function getElement(
  * wrapper
  * for {@link ElementHandle}).
  */
-export async function getElements(
-    page: Page,
-    property: string,
-): Promise<Array<WebElement>> {
+export async function getElements(page: Page, property: string): Promise<Array<WebElement>> {
     const rawElements: Array<ElementHandle<Element>> = await page.$$(property)
     return WebElement.fromSource(rawElements)
 }
@@ -72,4 +68,31 @@ export async function getLabels(page: Page): Promise<Array<WebLabelElement>> {
             for: element.getAttribute('for'),
         })),
     )
+}
+
+async function wasButtonHandled(handledButtons: Set<string>, button: WebElement): Promise<boolean> {
+    const partiallyUniqueID = await button.getPartiallyUniqueID()
+    if (handledButtons.has(partiallyUniqueID)) {
+        return true
+    } else {
+        handledButtons.add(partiallyUniqueID)
+        return false
+    }
+}
+
+export async function getNavButtons(this: WebPage): Promise<Array<WebElement>> {
+    const page: Page = this.page
+    const navButtons: Array<WebElement> = []
+    const buttons: Array<WebElement> = await this.getElements(page, Env.NAV_TAGS)
+    this.handledButtons.clear()
+
+    for (const button of buttons) {
+        if (await wasButtonHandled(this.handledButtons, button)) {
+            continue
+        }
+
+        navButtons.push(button)
+    }
+
+    return navButtons
 }

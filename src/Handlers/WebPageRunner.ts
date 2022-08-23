@@ -1,33 +1,33 @@
 import { Env } from '@/Env'
-import { WebPage } from '@/WebPage'
+import { NavSequence, MappedFormElement, WebPage } from '@/WebPage'
 import { sleep } from '@/Utils/Sleep'
 import { WebElement } from '@/Meta/WebElement'
-import { Page } from 'puppeteer'
+import { Page, Target } from 'puppeteer'
+import { WebLabelElement } from './WebPageParsers'
 
-type MappedFormElement = {
-    question: string
-    fields: Array<WebElement>
+
+
+function isInDomain(currentDomain: string, targetDomain: string): boolean {
+    return targetDomain === '*' || currentDomain.includes(targetDomain)
+}
+
+async function isInNavSequence(page: Page, button: WebElement, sequence: NavSequence): Promise<boolean> {
+    const attrName: string = sequence.parent_key
+    const attrValue: string = await button.getAttribute(page, attrName)
+    return attrValue && attrValue === sequence.parent_value
 }
 
 async function getNavSequence(webPage: WebPage, button: WebElement): Promise<Array<string>> {
     const page: Page = webPage.page
-    const current_domain: string = webPage.page.url().toLowerCase()
+    const currentDomain: string = webPage.page.url().toLowerCase()
 
-    for (const buttonRecord of webPage.navButtons) {
-        // only consider the button if it is within the correct domain
-        const domain: string = buttonRecord.domain
-        if (domain !== '*' && !current_domain.includes(domain)) continue
+    for (const target of webPage.targetNavButtons) {
+        if (isInDomain(currentDomain, target.domain) == false) {
+            continue
+        }
 
-        // check all buttons to see if {@param button} matches the record.
-        // if the button matches, it must be a navigation button so we handle
-        // the sequence by clicking each button in the sequence one by one.
-        for (const sequence of buttonRecord.sequence_buttons) {
-            const key: string = sequence.parent_key
-            const value: string = await button.getAttribute(page, key)
-
-            // if the attribute exists, we need to check the value (innerText)
-            // if the value matches the button record, we return the children
-            if (value && value === sequence.parent_value) {
+        for (const sequence of target.sequence) {
+            if (isInNavSequence(page, button, sequence)) {
                 return sequence.children
             }
         }
@@ -36,111 +36,134 @@ async function getNavSequence(webPage: WebPage, button: WebElement): Promise<Arr
     return []
 }
 
-async function getNavButtons(webPage: WebPage, props: Array<string>, attr: Array<string>): Promise<Array<WebElement>> {
-    const page: Page = webPage.page
-    const buttons: Array<WebElement> = await webPage.getElements(page, Env.NAV_TAGS)
-
-    // todo: see if there is a more efficient solution. for
-    // some reason some websites display the same button twice
-    const handledButtons: Set<string> = new Set()
-    const navButtons: Array<WebElement> = []
-
-    for (const button of buttons) {
-        const partiallyUniqueID = await button.getPartiallyUniqueID()
-
-        if (handledButtons.has(partiallyUniqueID)) continue
-        handledButtons.add(partiallyUniqueID)
-
-        // load the properties and attributes in the event the reference held
-        // by ElementHandle becomes invalid
-        props.forEach((property) => button.getProperty(property))
-        attr.forEach((attribute) => button.getAttribute(page, attribute))
-
-        navButtons.push(button)
-    }
-
-    return navButtons
-}
-
-async function handleNavButtons(webPage: WebPage): Promise<boolean> {
-    const defaultProperties = ['id', 'innerText']
-    const defaultAttributes = ['data-automation-id']
-    const navButtons: Array<WebElement> = await getNavButtons(webPage, defaultProperties, defaultAttributes)
+async function handleNavButtons(webPage: WebPage) {
+    const navButtons: Array<WebElement> = await webPage.getNavButtons()
 
     for (const button of navButtons) {
-        let wasButtonClicked: boolean = await webPage.focusElement(button)
-        if (!wasButtonClicked || webPage.hasURLChanged()) return true
+        if ((await webPage.focusElement(button)) == false) {
+            return
+        }
 
-        const navSequence: Array<string> = await getNavSequence(webPage, button)
-        for (let i = 0; i < navSequence.length; i++) {
-            const nextElement = await webPage.getElement(webPage.page, navSequence[i], true)
-            if (!nextElement) break
+        button.init(webPage.page, ['id', 'innerText'], ['data-automation-id'])
+        const sequence: Array<string> = await getNavSequence(webPage, button)
 
-            wasButtonClicked = await webPage.focusElement(nextElement)
-            if (!wasButtonClicked || webPage.hasURLChanged()) return true
+        for (let i = 0; i < sequence.length; i++) {
+            const next: WebElement = await webPage.getElement(webPage.page, sequence[i], true)
+            if ((await webPage.focusElement(next)) == false) {
+                return
+            }
         }
     }
 
-    return false
+    return
 }
 
-async function getMappedPage(webPage: WebPage): Promise<Map<string, MappedFormElement>> {
-    const entries = new Map<string, MappedFormElement>()
+async function createEntry(webPage: WebPage, label: WebLabelElement){
+    const mappedElements: Map<string, MappedFormElement> = webPage.mappedElements
+    const question: string = label.text
+    const forAttr: string = label.for
 
-    function insertEntry(target: string, question: string, field: WebElement) {
-        if (!entries.has(target)) {
+    if(mappedElements.has(forAttr) == false) {
+        const value: MappedFormElement = { question: question, fields: [] }
+        mappedElements.set(forAttr, value)
+    }
+}
+
+async function addToEntry(webPage: WebPage, forAttr: string, inputField: WebElement) {
+    const mappedElements: Map<string, MappedFormElement> = webPage.mappedElements
+    if(forAttr && inputField) {
+        const entry: MappedFormElement = mappedElements.get(forAttr)
+        if(entry) {
+            entry.fields.push(inputField)
         }
     }
+}
+
+async function mapWebPage(webPage: WebPage) {
+    webPage.mappedElements.clear()
 
     const page = webPage.page
-    const selectors = await webPage.getElements(page, Env.BUTTON_TAGS)
-    const labels = await webPage.getLabels(page)
+
+    const labels: Array<WebLabelElement> = await webPage.getLabels(page)
     const inputs: Array<WebElement> = await webPage.getElements(page, Env.INPUT_TAGS)
+    const selectors: Array<WebElement> = await webPage.getElements(page, Env.BUTTON_TAGS)
 
-    // for (const input of await webPage.getElements(webPage.page, Env.INPUT_TAGS)) {
-    //     console.log('input id: ', await input.getProperty('id'))
-    // }
-
-    // for (const label of await webPage.getLabels(page)) {
-    //     console.log(`question: ${label.text} for: ${label.for}`)
-    // }
-
-    // for (const button of await webPage.getElements(page, Env.INPUT_BUTTON_TAGS)) {
-    //     console.log('button id: ', await button.getProperty('id'))
-    // }
-
-    return entries
-}
-
-/**
- * Parses the current webPage for input fields, labels, and buttons. Matches all
- * labels (questions) to buttons and text inputs then selects (button) or types
- * (text input) pre-defined responses parsed from @/data/form.json.
- *
- * Current buttons handled: raadio, checkbox, data, selection.
- *
- * @async
- * @param {WebPage} webPage instance of WebPage.
- * @returns {Promise<void>}
- */
-async function parsePage(webPage: WebPage) {
-    // if the url has changed, then we move on to the next iteration so we can
-    // check the navigation buttons on that page before parsing anything else
-    if (await handleNavButtons(webPage)) return
-
-    // if the function reaches this point, we assume all values scraped remain
-    // valid since we have completed all possible navigations.
-    const mappedFormElement: Map<string, MappedFormElement> = await getMappedPage(webPage)
-}
-
-export function hasURLChanged(this: WebPage): boolean {
-    const pageURL = this.page.url()
-    if (this.url !== pageURL) {
-        this.url = pageURL
-        return true
+    for (const label of labels) {
+        createEntry(webPage, label)
     }
 
-    return false
+    for (const input of inputs) {
+        let inputElementID: string = await input.getProperty('id')
+        const propertyType: string = await input.getProperty('type')
+
+        if(propertyType == 'radio'){
+            const ancestor: WebElement = await input.getAncestorWithProperty("id")
+            inputElementID = await ancestor.getProperty('id')
+        }
+
+        addToEntry(webPage, inputElementID,input)
+    }
+
+    for (const button of selectors) {
+        const buttonElementID: string = await button.getProperty('id')
+        addToEntry(webPage, buttonElementID, button)
+    }
+}
+
+async function handleInputFields(webPage: WebPage) {
+    await mapWebPage(webPage)
+
+    const mappedElements: Map<string, MappedFormElement> = webPage.mappedElements
+
+    for(const [forAttr, formElement] of mappedElements){
+        for(const inputField of formElement.fields){
+            const type = await inputField.getProperty('type')
+            switch(type){
+                case 'text':
+                    const value: string = await inputField.getProperty("value")
+                    if(value === ''){
+                        await webPage.sendTextToElement(inputField, "hello")
+                        await sleep(100)
+                    }
+                    console.log(formElement.question)
+                    break
+                case 'button':
+                    break
+                case 'radio':
+                    break
+                default:
+                    console.log("unhandled input field type: ", type)
+            }
+        }
+    }
+}
+
+// taken from https://stackoverflow.com/questions/52497252/puppeteer-wait-until-page-is-completely-loaded
+const waitTillHTMLRendered = async (page, timeout = 30000) => {
+    const checkDurationMsecs = 250
+    const maxChecks = timeout / checkDurationMsecs
+    let lastHTMLSize = 0
+    let checkCounts = 1
+    let countStableSizeIterations = 0
+    const minStableSizeIterations = 4
+
+    while (checkCounts++ <= maxChecks) {
+        let html = await page.content()
+        let currentHTMLSize = html.length
+
+        if (lastHTMLSize != 0 && currentHTMLSize == lastHTMLSize) {
+            countStableSizeIterations++
+        } else {
+            countStableSizeIterations = 0 //reset the counter
+        }
+
+        if (countStableSizeIterations >= minStableSizeIterations) {
+            break
+        }
+
+        lastHTMLSize = currentHTMLSize
+        await page.waitForTimeout(checkDurationMsecs)
+    }
 }
 
 /**
@@ -154,11 +177,31 @@ export function hasURLChanged(this: WebPage): boolean {
  * @returns {Promise<void>}
  */
 export async function start(this: WebPage, startURL: string) {
-    await this.page.goto(startURL, { waitUntil: 'networkidle0' })
-    this.url = startURL
+    let pageLifeCycleID: number = 0
 
-    while (true) {
-        await parsePage(this)
-        await sleep(Env.BASE_SLEEP_TIME)
-    }
+
+    this.page.on('load', async () => {
+        await waitTillHTMLRendered(this.page)
+        
+        const lifeCycleID = pageLifeCycleID++
+        const currentURL: string = this.page.url()
+
+        console.log(`[Life Cycle] Start (id: ${lifeCycleID})`)
+
+        await handleNavButtons(this)
+
+        while (currentURL === this.page.url()) {
+            try {
+                await handleInputFields(this)
+                await sleep(500)
+            } catch (e) {
+                // console.log(e)
+                break;
+            }
+        }
+
+        console.log(`[Life Cycle] End   (id: ${lifeCycleID})`)
+    })
+
+    await this.page.goto(startURL, { waitUntil: 'networkidle0' })
 }
