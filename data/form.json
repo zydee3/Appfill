@@ -1,10 +1,14 @@
 [
-    {
-        "question": ["first name"],
-        "answer": "Vincent"
-    },
-    {
-        "question": ["last name"],
-        "answer": "Tan"
-    }
+    { "question": ["phone code", "phone extension"], "answer": "-ignored-input-fields" },
+    { "question": ["first name"], "answer": "Vincent" },
+    { "question": ["last name"], "answer": "Tan" },
+    { "question": ["email"], "answer": "apply.vincenttan@gmail.com" },
+    { "question": ["hear about us"], "answer": "linkedin" },
+    { "question": ["address"], "answer": "130 Iowa Drive" },
+    { "question": ["phone device type"], "answer": "mobile" },
+    { "question": ["have you ever worked for"], "answer": "no" },
+    { "question": ["city"], "answer": "Santa Cruz" },
+    { "question": ["state"], "answer": "california" },
+    { "question": ["zip", "postal code"], "answer": "95060" },
+    { "question": ["phone number"], "answer": "7072972087" }
 ]

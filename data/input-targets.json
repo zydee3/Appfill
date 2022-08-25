@@ -1,0 +1,9 @@
+[
+    {
+        "domain": "myworkdayjobs.com",
+        "targets": [
+            {"attribute": "", "split": false, "value": ""},
+            {"attribute": "", "split": true, "value": "value1,value2"}
+        ]
+    }
+]

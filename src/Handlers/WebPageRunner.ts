@@ -90,6 +90,7 @@ async function mapWebPage(webPage: WebPage) {
 
     for (const label of labels) {
         createEntry(webPage, label)
+        console.log("label: ", label)
     }
 
     for (const input of inputs) {
@@ -101,7 +102,7 @@ async function mapWebPage(webPage: WebPage) {
             inputElementID = await ancestor.getProperty('id')
         }
 
-        addToEntry(webPage, inputElementID,input)
+        addToEntry(webPage, inputElementID, input)
     }
 
     for (const button of selectors) {
@@ -110,26 +111,52 @@ async function mapWebPage(webPage: WebPage) {
     }
 }
 
+async function handleTextInputField(webPage: WebPage, inputField: WebElement, formElement: MappedFormElement) {
+    const value: string = await inputField.getProperty("value")
+    if(value !== '') {
+        return
+    }
+
+    const question: string = formElement.question
+    const answer: string = await webPage.getAnswer(question)
+
+    switch(answer){
+        case '':
+            console.log('Unhandled Text Input Field: ', question)
+        case '-ignored-input-fields':
+            return
+        default:
+            // console.log(`Writing Text: ${question}=${answer}`)
+            await webPage.sendTextToElement(inputField, answer)
+            await sleep(10*answer.length)
+            break
+    }
+}
+
+async function handleRadioInputField(webPage: WebPage, inputField: WebElement, formElement: MappedFormElement) {
+    const question: string = formElement.question
+    const answer: string = await webPage.getAnswer(question)
+
+    // console.log(await inputField.getProperty("innerText"))
+
+}
+
 async function handleInputFields(webPage: WebPage) {
     await mapWebPage(webPage)
 
     const mappedElements: Map<string, MappedFormElement> = webPage.mappedElements
 
     for(const [forAttr, formElement] of mappedElements){
-        for(const inputField of formElement.fields){
-            const type = await inputField.getProperty('type')
+        for(const field of formElement.fields){
+            const type = await field.getProperty('type')
             switch(type){
                 case 'text':
-                    const value: string = await inputField.getProperty("value")
-                    if(value === ''){
-                        await webPage.sendTextToElement(inputField, "hello")
-                        await sleep(100)
-                    }
-                    console.log(formElement.question)
+                    await handleTextInputField(webPage, field, formElement)
                     break
                 case 'button':
                     break
                 case 'radio':
+                    await handleRadioInputField(webPage, field, formElement)
                     break
                 default:
                     console.log("unhandled input field type: ", type)
@@ -195,7 +222,9 @@ export async function start(this: WebPage, startURL: string) {
                 await handleInputFields(this)
                 await sleep(500)
             } catch (e) {
-                // console.log(e)
+                if(e.message !== 'Execution context was destroyed, most likely because of a navigation.'){
+                    console.log(e)
+                }
                 break;
             }
         }

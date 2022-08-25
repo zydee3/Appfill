@@ -53,9 +53,16 @@ async function setParams(page: WebPage) {
     const selectors: string = await fs.readFile(selPath, { encoding: 'utf-8' })
 
     page.targetNavButtons = []
+    for (const targetButton of JSON.parse(selectors)) {
+        page.targetNavButtons.push(targetButton)
+    }
 
-    for (const element of JSON.parse(selectors)) {
-        page.targetNavButtons.push(element)
+    const qaPath: string = path.join(process.cwd(), 'data/form.json')
+    const qas: string = await fs.readFile(qaPath, { encoding: 'utf-8' })
+
+    page.qaEntries = []
+    for(const qaEntry of JSON.parse(qas)){
+        page.qaEntries.push(qaEntry)
     }
 }
 

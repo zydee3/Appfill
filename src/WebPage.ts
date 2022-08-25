@@ -4,6 +4,7 @@ import { focusElement, sendTextToElement } from './Handlers/WebPageActions'
 import { init } from './Handlers/WebPageDefault'
 import { start } from './Handlers/WebPageRunner'
 import { WebElement } from './Meta/WebElement'
+import { getAnswer } from './Meta/WebFormData'
 
 export type MappedFormElement = {
     question: string
@@ -21,6 +22,11 @@ export type NavButton = {
     sequence: Array<NavSequence>
 }
 
+export type InputFormQA = {
+    question: Array<string>,
+    answer: string
+}
+
 export class WebPage {
     public browser: Browser
     public page: Page
@@ -36,6 +42,7 @@ export class WebPage {
      * @type {Map<string, MappedFormElement>}
      */
     public mappedElements: Map<string, MappedFormElement>
+    public qaEntries: Array<InputFormQA>
 
     // WebPage Defaults
     public init = init
@@ -52,4 +59,7 @@ export class WebPage {
     public getElements = getElements
     public getLabels = getLabels
     public getNavButtons = getNavButtons
+
+    // WebPage Answer
+    public getAnswer = getAnswer
 }

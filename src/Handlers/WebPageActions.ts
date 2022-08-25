@@ -13,8 +13,12 @@ import { WebPage } from '../WebPage'
  */
 export async function focusElement(this: WebPage, element: WebElement): Promise<boolean> {
     if (element) {
-        await element.ref.click()
-        return true
+        if(element.ref){
+            await element.ref.click()
+            return true
+        } else {
+            console.log("element.ref is undefined: ", element)
+        }
     }
 
     return false
