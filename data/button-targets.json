@@ -5,6 +5,7 @@
             {
                 "attribute": "data-automation-id",
                 "value": "adventureButton",
+                "waitForNavigation": true,
                 "children": [
                     "[data-automation-id=\"applyManually\"]"
                 ]

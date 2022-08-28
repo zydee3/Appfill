@@ -1,9 +1,9 @@
 import path from 'path'
 import fs from 'fs/promises'
-
 import { Env } from '@/Env'
-import { MappedFormElement, WebPage } from '@/WebPage'
+import { WebPage } from '@/WebPage'
 import puppeteer, { Page } from 'puppeteer'
+import { MultiKeyMap } from '@/Utils/MultiKeyMap'
 
 /**
  * Initializes a single {@link Browser} instance and assigns it to
@@ -41,6 +41,13 @@ async function setPage(webPage: WebPage) {
     webPage.page = page
 }
 
+
+export type InputFormQA = {
+    question: Array<string>,
+    answer: string
+}
+
+
 /**
  * Loads all associated JSON data.
  *
@@ -57,13 +64,23 @@ async function setParams(page: WebPage) {
         page.targetNavButtons.push(targetButton)
     }
 
-    const qaPath: string = path.join(process.cwd(), 'data/form.json')
-    const qas: string = await fs.readFile(qaPath, { encoding: 'utf-8' })
+    
 
-    page.qaEntries = []
-    for(const qaEntry of JSON.parse(qas)){
-        page.qaEntries.push(qaEntry)
+    const loadQA = async() => {
+        const filePath: string = path.join(process.cwd(), 'data/form-data.json')
+        const data: string = await fs.readFile(filePath, { encoding: 'utf-8' })
+
+        for(const entry of JSON.parse(data)){
+            const questions: Array<string> = entry.question
+            const answer: string = entry.answer
+
+            for(const question of questions) {
+                page.mappedQA.add(question, answer)
+            }
+        }
     }
+
+    loadQA()
 }
 
 /**
@@ -75,10 +92,15 @@ async function setParams(page: WebPage) {
  * @returns {Promise<void>}
  */
 export async function init(this: WebPage): Promise<void> {
+    this.lifeCycleID = 0
+    this.ignoredExceptions = new Set<string>()
+    this.handledButtons = new Set<string>()
+    this.handledQuestions = new Set<string>()
+    this.mappedQA = new MultiKeyMap<string, string>()
+
     await setBrowser(this)
     await setPage(this)
     await setParams(this)
-
-    this.handledButtons = new Set<string>()
-    this.mappedElements = new Map<string, MappedFormElement>()
+    
+    this.ignoredExceptions.add('Execution context was destroyed, most likely because of a navigation.')
 }

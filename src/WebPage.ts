@@ -1,19 +1,13 @@
 import { Browser, Page } from 'puppeteer'
-import { getElement, getElements, getLabels, getNavButtons } from './Handlers/WebPageParsers'
-import { focusElement, sendTextToElement } from './Handlers/WebPageActions'
+import { getElement, getElements } from './Handlers/WebPageParsers'
 import { init } from './Handlers/WebPageDefault'
 import { start } from './Handlers/WebPageRunner'
-import { WebElement } from './Meta/WebElement'
-import { getAnswer } from './Meta/WebFormData'
-
-export type MappedFormElement = {
-    question: string
-    fields: Array<WebElement>
-}
+import { MultiKeyMap } from './Utils/MultiKeyMap'
 
 export type NavSequence = {
     parent_key: string
     parent_value: string
+    waitForNavigation: boolean,
     children: Array<string>
 }
 
@@ -22,27 +16,15 @@ export type NavButton = {
     sequence: Array<NavSequence>
 }
 
-export type InputFormQA = {
-    question: Array<string>,
-    answer: string
-}
-
 export class WebPage {
     public browser: Browser
     public page: Page
-    public targetNavButtons: Array<NavButton>
+    public lifeCycleID: number
+    public ignoredExceptions: Set<string>
+    public handledQuestions: Set<string>
     public handledButtons: Set<string>
-
-
-    /**
-     * Stores parsed {@link MappedFormElement}. Key is 'for' attribute of the
-     * element. Value is a question and an array of input fields or selections. 
-     *
-     * @public
-     * @type {Map<string, MappedFormElement>}
-     */
-    public mappedElements: Map<string, MappedFormElement>
-    public qaEntries: Array<InputFormQA>
+    public targetNavButtons: Array<NavButton>
+    public mappedQA: MultiKeyMap<string, string>
 
     // WebPage Defaults
     public init = init
@@ -50,16 +32,7 @@ export class WebPage {
     // WebPage Runner
     public start = start
 
-    // WebPage Actions
-    public focusElement = focusElement
-    public sendTextToElement = sendTextToElement
-
     // WebPage Parsers
     public getElement = getElement
     public getElements = getElements
-    public getLabels = getLabels
-    public getNavButtons = getNavButtons
-
-    // WebPage Answer
-    public getAnswer = getAnswer
 }

@@ -18,11 +18,14 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
     "cross-env": "^7.0.3",
+    "eslint": "^8.23.0",
     "nodemon": "^2.0.19",
     "swc": "^1.0.11",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   }
 }

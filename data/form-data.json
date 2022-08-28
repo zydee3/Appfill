@@ -3,7 +3,7 @@
     { "question": ["first name"], "answer": "Vincent" },
     { "question": ["last name"], "answer": "Tan" },
     { "question": ["email"], "answer": "apply.vincenttan@gmail.com" },
-    { "question": ["hear about us"], "answer": "linkedin" },
+    { "question": ["hear about us"], "answer": "job board - linkedin" },
     { "question": ["address"], "answer": "130 Iowa Drive" },
     { "question": ["phone device type"], "answer": "mobile" },
     { "question": ["have you ever worked for"], "answer": "no" },

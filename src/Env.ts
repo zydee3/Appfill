@@ -13,7 +13,10 @@ export const Env = cleanEnv(process.env, {
     BASE_SLEEP_TIME: num(),
 
     BUTTON_TAGS: str(),
+    TEXT_BOX_TAGS: str(),
     INPUT_TAGS: str(),
     LABEL_TAGS: str(),
     NAV_TAGS: str(),
+    RADIO_TAGS: str(),
+    DROP_DOWN_ITEM_TAGS: str()
 })

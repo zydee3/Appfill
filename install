@@ -9,3 +9,6 @@ npm install tsconfig-paths --save-dev
 npm install dotenv
 npm install envalid
 reflect-metadata
+
+npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint typescript
+    > use with npx eslint .
