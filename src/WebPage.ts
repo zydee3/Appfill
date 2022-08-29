@@ -20,7 +20,6 @@ export class WebPage {
     public browser: Browser
     public page: Page
     public lifeCycleID: number
-    public ignoredExceptions: Set<string>
     public handledQuestions: Set<string>
     public handledButtons: Set<string>
     public targetNavButtons: Array<NavButton>

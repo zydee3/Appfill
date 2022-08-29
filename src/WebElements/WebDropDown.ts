@@ -2,12 +2,13 @@ import { Env } from "@/Env";
 import { sleep } from "@/Utils/Sleep";
 import { WebPage } from "@/WebPage";
 import { ElementHandle } from "puppeteer";
+import { WebElementProperty } from "./Meta/WebElementProperty";
 import { WebDummy } from "./WebDummy";
 import { WebElement } from "./WebElement";
 
 export class WebDropDown extends WebElement {
     public override async handle() {
-        const id: string = await this.getID()
+        const id: string = await this.getProperty(WebElementProperty.ID)
         const parentTag: string = `button#${id}`
         const optionTag: string = Env.DROP_DOWN_ITEM_TAGS
         
@@ -48,7 +49,7 @@ export class WebDropDown extends WebElement {
             if(elements){
                 for(const element of elements) {
                     const dropDown: WebDropDown = new WebDropDown(webPage, element)
-                    const dropDownID: string = await dropDown.getID()
+                    const dropDownID: string = await dropDown.getProperty(WebElementProperty.ID)
                     dropDown.question = labeledQuestions.get(dropDownID)
                     dropDown.answer = webPage.mappedQA.get(dropDown.question)
 

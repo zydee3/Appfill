@@ -3,6 +3,8 @@ import { sleep } from "@/Utils/Sleep"
 import { WebElement } from "@/WebElements/WebElement"
 import { WebPage } from "@/WebPage"
 import { ElementHandle } from "puppeteer"
+import { WebElementAttribute } from "./Meta/WebElementAttribute"
+import { WebElementProperty } from "./Meta/WebElementProperty"
 import { WebDummy } from "./WebDummy"
 
 export class WebRadio extends WebElement {
@@ -28,7 +30,7 @@ export class WebRadio extends WebElement {
         const optionDummy: WebDummy = new WebDummy(undefined, undefined)
         for(const option of Array.from(this.selections.values())){
             optionDummy.element = option
-            const id: string = await optionDummy.getID()
+            const id: string = await optionDummy.getProperty(WebElementProperty.ID)
             this.webPage.handledQuestions.add(id)
         }
     }
@@ -59,7 +61,7 @@ export class WebRadio extends WebElement {
         
         while(parent){
             let dummyParent: WebDummy = new WebDummy(webPage, parent)
-            const id: string = await dummyParent.getProperty('id')
+            const id: string = await dummyParent.getProperty(WebElementProperty.ID)
             if(id !== '') {
                 return id
             }
@@ -87,11 +89,11 @@ export class WebRadio extends WebElement {
                 return false
             }
 
-            if(await option.getAttribute('aria-checked') === 'true') {
+            if(await option.getAttribute(WebElementAttribute.AriaChecked) === 'true') {
                 return false
             }
 
-            if(labels.has(await option.getID()) === false) {
+            if(labels.has(await option.getProperty(WebElementProperty.ID)) === false) {
                 return false
             }
 
@@ -133,7 +135,7 @@ export class WebRadio extends WebElement {
                 continue
             }
     
-            const optionValue: string = labels.get(await dummy.getID())
+            const optionValue: string = labels.get(await dummy.getProperty(WebElementProperty.ID))
             const radio: WebRadio = getOrCreate(containerID, containerQuestion)
 
             if(radio){

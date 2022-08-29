@@ -1,6 +1,7 @@
 import { Env } from "@/Env";
 import { NavSequence, WebPage } from "@/WebPage";
 import { ElementHandle } from "puppeteer";
+import { getAttrByValue } from "./Meta/WebElementAttribute";
 import { WebElement } from "./WebElement";
 
 export class WebNavButton extends WebElement {
@@ -63,7 +64,7 @@ export class WebNavButton extends WebElement {
     private async isInNavSequence(sequence: NavSequence): Promise<boolean> {
         const targetAttrName: string = sequence.parent_key
         const targetAttrValue: string = sequence.parent_value
-        const currentAttrValue: string = await this.getAttribute(targetAttrName)
+        const currentAttrValue: string = await this.getAttribute(getAttrByValue(targetAttrName))
         return currentAttrValue && currentAttrValue === targetAttrValue
     }
     

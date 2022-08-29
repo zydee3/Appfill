@@ -1,6 +1,7 @@
 import { Env } from "@/Env";
 import { WebPage } from "@/WebPage";
 import { ElementHandle } from "puppeteer";
+import { WebElementProperty } from "./Meta/WebElementProperty";
 import { WebElement } from "./WebElement";
 
 export class WebTextBox extends WebElement {
@@ -33,11 +34,11 @@ export class WebTextBox extends WebElement {
                 for(const element of elements){
                     const textBox: WebTextBox = new WebTextBox(webPage, element)
 
-                    const id: string = await textBox.getID()
+                    const id: string = await textBox.getProperty(WebElementProperty.ID)
                     textBox.question = labeledQuestions.get(id)
                     textBox.answer = webPage.mappedQA.get(textBox.question)
 
-                    const canHandle: boolean = await textBox.getValue() === ''
+                    const canHandle: boolean = await textBox.getProperty(WebElementProperty.Value) === ''
                         || webPage.handledQuestions.has(textBox.question) === false
 
                     if(textBox.question
