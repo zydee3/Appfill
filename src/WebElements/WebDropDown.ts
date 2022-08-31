@@ -63,7 +63,7 @@ export class WebDropDown extends WebElement {
      *
      * @public
      * @static
-     * @param {WebPage} webPage current working instance of {@link WebPage}
+     * @param {WebPage} webPage current working instance of {@link WebPage}.
      * @param {Map<string, string>} labeledQuestions matched labels read from
      * {@link WebPage.page}. 
      * @returns {Promise<Array<WebDropDown>>} An array of drop down menus that 
