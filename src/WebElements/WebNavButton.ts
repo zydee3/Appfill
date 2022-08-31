@@ -74,7 +74,7 @@ export class WebNavButton extends WebElement {
     private async isInNavSequence(sequence: NavSequence): Promise<boolean> {
         const targetAttrName: string = sequence.parent_key
         const targetAttrValue: string = sequence.parent_value
-        const currentAttrValue: string = await this.getAttr(getAttrByValue(targetAttrName))
+        const currentAttrValue: string = await this.getAttribute(getAttrByValue(targetAttrName))
         return currentAttrValue && currentAttrValue === targetAttrValue
     }
 

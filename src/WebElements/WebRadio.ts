@@ -30,7 +30,7 @@ export class WebRadio extends WebElement {
         const optionDummy: WebDummy = new WebDummy(undefined, undefined)
         for(const option of Array.from(this.selections.values())){
             optionDummy.element = option
-            const id: string = await optionDummy.getProp(WebElementProperty.ID)
+            const id: string = await optionDummy.getProperty(WebElementProperty.ID)
             this.webPage.handledQuestions.add(id)
         }
     }
@@ -61,7 +61,7 @@ export class WebRadio extends WebElement {
         
         while(parent){
             let dummyParent: WebDummy = new WebDummy(webPage, parent)
-            const id: string = await dummyParent.getProp(WebElementProperty.ID)
+            const id: string = await dummyParent.getProperty(WebElementProperty.ID)
             if(id !== '') {
                 return id
             }
@@ -89,11 +89,11 @@ export class WebRadio extends WebElement {
                 return false
             }
 
-            if(await option.getAttr(WebElementAttribute.AriaChecked) === 'true') {
+            if(await option.getAttribute(WebElementAttribute.AriaChecked) === 'true') {
                 return false
             }
 
-            if(labels.has(await option.getProp(WebElementProperty.ID)) === false) {
+            if(labels.has(await option.getProperty(WebElementProperty.ID)) === false) {
                 return false
             }
 
@@ -135,7 +135,7 @@ export class WebRadio extends WebElement {
                 continue
             }
     
-            const optionValue: string = labels.get(await dummy.getProp(WebElementProperty.ID))
+            const optionValue: string = labels.get(await dummy.getProperty(WebElementProperty.ID))
             const radio: WebRadio = getOrCreate(containerID, containerQuestion)
 
             if(radio){
