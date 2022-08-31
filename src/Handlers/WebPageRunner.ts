@@ -34,7 +34,7 @@ async function handleNavButtons(webPage: WebPage) {
     }
 }
 
-async function handlePage(webPage: WebPage, currentLifeCycleID: number) {
+async function handlePage(webPage: WebPage) {
     const currentURL: string = webPage.page.url()
     webPage.handledQuestions.clear()
 
@@ -64,7 +64,7 @@ export async function start(this: WebPage, startURL: string): Promise<void> {
             await waitTillHTMLRendered(this.page)
             const currentLifeCycleID = this.lifeCycleID++
             console.log(`[Life Cycle] Start (id: ${currentLifeCycleID})`)
-            await handlePage(this, currentLifeCycleID)
+            await handlePage(this)
             console.log(`[Life Cycle] End   (id: ${currentLifeCycleID})`)
         } catch (exception){
             console.log(exception)

@@ -13,8 +13,8 @@ export async function readFromPage(webPage: WebPage): Promise<Map<string, string
     const dummy: WebTextBox =  new WebTextBox(webPage, undefined)
     for(const element of elements) {
         dummy.element = element
-        const targetFor: string = await dummy.getAttribute(WebElementAttribute.For)
-        const textContent: string = await dummy.getProperty(WebElementProperty.TextContent)
+        const targetFor: string = await dummy.getAttr(WebElementAttribute.For)
+        const textContent: string = await dummy.getProp(WebElementProperty.TextContent)
 
         if(webPage.handledQuestions.has(targetFor)){
             continue

@@ -1,5 +1,4 @@
 import { Env } from "@/Env"
-import { sleep } from "@/Utils/Sleep"
 import { WebElement } from "@/WebElements/WebElement"
 import { WebPage } from "@/WebPage"
 import { ElementHandle } from "puppeteer"
@@ -12,6 +11,7 @@ export class WebRadio extends WebElement {
     public selections: Map<string, ElementHandle<Element>>
 
     public override async init() {
+        await super.init()
         this.selections = new Map()
     }
 
@@ -30,12 +30,12 @@ export class WebRadio extends WebElement {
         const optionDummy: WebDummy = new WebDummy(undefined, undefined)
         for(const option of Array.from(this.selections.values())){
             optionDummy.element = option
-            const id: string = await optionDummy.getProperty(WebElementProperty.ID)
+            const id: string = await optionDummy.getProp(WebElementProperty.ID)
             this.webPage.handledQuestions.add(id)
         }
     }
 
-    public addSelection(optionValue: string, element: ElementHandle<Element>){
+    private addSelection(optionValue: string, element: ElementHandle<Element>){
         if(this.selections.has(optionValue)){
             console.log("duplicate radio selection: ", optionValue)
         } else if(!element){
@@ -45,7 +45,7 @@ export class WebRadio extends WebElement {
         }
     }
 
-    public async makeSelection(answer: string) {
+    private async makeSelection(answer: string) {
         for(const [selectionValue, element] of this.selections){
             const compare = selectionValue.toLowerCase()
             if(compare.includes(answer)){
@@ -61,7 +61,7 @@ export class WebRadio extends WebElement {
         
         while(parent){
             let dummyParent: WebDummy = new WebDummy(webPage, parent)
-            const id: string = await dummyParent.getProperty(WebElementProperty.ID)
+            const id: string = await dummyParent.getProp(WebElementProperty.ID)
             if(id !== '') {
                 return id
             }
@@ -89,11 +89,11 @@ export class WebRadio extends WebElement {
                 return false
             }
 
-            if(await option.getAttribute(WebElementAttribute.AriaChecked) === 'true') {
+            if(await option.getAttr(WebElementAttribute.AriaChecked) === 'true') {
                 return false
             }
 
-            if(labels.has(await option.getProperty(WebElementProperty.ID)) === false) {
+            if(labels.has(await option.getProp(WebElementProperty.ID)) === false) {
                 return false
             }
 
@@ -135,7 +135,7 @@ export class WebRadio extends WebElement {
                 continue
             }
     
-            const optionValue: string = labels.get(await dummy.getProperty(WebElementProperty.ID))
+            const optionValue: string = labels.get(await dummy.getProp(WebElementProperty.ID))
             const radio: WebRadio = getOrCreate(containerID, containerQuestion)
 
             if(radio){

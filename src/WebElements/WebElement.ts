@@ -31,6 +31,8 @@ export abstract class WebElement {
      * @type {ElementHandle<Element>}
      */
     public element: ElementHandle<Element>
+
+    public id: string
     /**
      * Description placeholder
      *
@@ -70,7 +72,7 @@ export abstract class WebElement {
      * @returns {Promise<string>} target property value of {@link element} or empty
      * string if {@link element} does not contain {@param property}.
      */
-    public static async getProperty(element: ElementHandle<Element>, property: WebElementProperty): Promise<string> {
+    public static async getProp(element: ElementHandle<Element>, property: WebElementProperty): Promise<string> {
         if(element && property){
             const wrapper: JSHandle<unknown> = await element.getProperty(property)
             const value = (await wrapper.jsonValue()) as string
@@ -93,7 +95,7 @@ export abstract class WebElement {
      * @returns {Promise<string>} target property value of {@link element} or empty
      * string if {@link element} does not contain {@param property}.
      */
-    public static async getAttribute(page: Page, element: ElementHandle<Element>, attribute: WebElementAttribute): Promise<string> {
+    public static async getAttr(page: Page, element: ElementHandle<Element>, attribute: WebElementAttribute): Promise<string> {
         if(page && element){
             const value = await page.evaluate((element, tag) => {
                 return element.getAttribute(tag)
@@ -106,6 +108,13 @@ export abstract class WebElement {
         return ''
     }
 
+    public static shouldHandle(webPage: WebPage, element: WebElement): boolean {
+        return element.question
+            && element.answer
+            && element.answer !== '-ignored-input-fields'
+            && webPage.handledQuestions.has(element.question) === false
+    }
+
     /**
      * Description placeholder
      *
@@ -114,8 +123,8 @@ export abstract class WebElement {
      * @param {WebElementProperty} property
      * @returns {Promise<string>}
      */
-    public async getProperty(property: WebElementProperty): Promise<string> {
-        return await WebElement.getProperty(this.element, property)
+    public async getProp(property: WebElementProperty): Promise<string> {
+        return await WebElement.getProp(this.element, property)
     }
 
     /**
@@ -126,8 +135,8 @@ export abstract class WebElement {
      * @param {WebElementAttribute} attribute
      * @returns {Promise<string>}
      */
-    public async getAttribute(attribute: WebElementAttribute): Promise<string> {
-        return await WebElement.getAttribute(this.webPage.page, this.element, attribute)
+    public async getAttr(attribute: WebElementAttribute): Promise<string> {
+        return await WebElement.getAttr(this.webPage.page, this.element, attribute)
     }
 
     /**
@@ -150,12 +159,12 @@ export abstract class WebElement {
      * @returns {Promise<string>}
      */
     public async getPartialID(): Promise<string> {
-        const id: string = await this.getProperty(WebElementProperty.ID)
+        const id: string = await this.getProp(WebElementProperty.ID)
         if(id !== ''){
             return id
         }
 
-        const innerText: string = await this.getProperty(WebElementProperty.ID)
+        const innerText: string = await this.getProp(WebElementProperty.ID)
         return innerText
     }
 
@@ -165,9 +174,11 @@ export abstract class WebElement {
      *
      * @public
      * @async
-     * @returns {*}
+     * @returns {Promise<void>}
      */
-    public async init() {}
+    public async init(): Promise<void> {
+        this.id = await this.getProp(WebElementProperty.ID)
+    }
 
 
     /**
@@ -175,9 +186,9 @@ export abstract class WebElement {
      *
      * @public
      * @async
-     * @returns {*}
+     * @returns {Promise<void>}
      */
-    public async handle() {}
+    public async handle(): Promise<void> {}
 
     /**
      * Description placeholder
