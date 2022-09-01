@@ -1,13 +1,16 @@
 import { Env } from "@/Env";
 import { WebPage } from "@/WebPage";
 import { ElementHandle } from "puppeteer";
-import { WebElementProperty } from "./Meta/WebElementProperty";
 import { WebElement } from "./WebElement";
 
 /**
  * Extended wrapper of {@link WebElement} which provides specific support for
  * handling drop down menus.
- *
+ * 
+ * @remarks Each drop down is queried by looking for all present <button> 
+ * elements in {@link Page}. For each button found, check if any of the button 
+ * is defined under {@link @/data/button-targets.json}. If defined, a sequence 
+ * must exist. For each button in the sequence, click the button in order.
  * @export
  * @class WebDropDown
  * @typedef {WebDropDown}
@@ -63,11 +66,11 @@ export class WebDropDown extends WebElement {
      *
      * @public
      * @static
-     * @param {WebPage} webPage current working instance of {@link WebPage}.
-     * @param {Map<string, string>} labeledQuestions matched labels read from
+     * @param {WebPage} webPage Current working instance of {@link WebPage}.
+     * @param {Map<string, string>} labeledQuestions Matched labels read from
      * {@link Page}. 
-     * @returns {Promise<Array<WebDropDown>>} An array of drop down menus that 
-     * have not been handled and have non-empty question and answer fields.
+     * @returns {Promise<Array<WebDropDown>>} An array of filtered drop down 
+     * menus.
      */
     public static readFromPage(webPage: WebPage, labeledQuestions: Map<string, string>): Promise<Array<WebDropDown>>{
         return new Promise(async (resolve, _) => {
