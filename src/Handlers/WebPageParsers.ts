@@ -44,7 +44,7 @@ export async function getElements(this: WebPage, tag: string): Promise<Array<Ele
     if(this.page) { 
         return await this.page.$$(tag)
     } else {
-        return undefined
+        return []
     }
 }
 

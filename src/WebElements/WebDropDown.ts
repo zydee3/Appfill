@@ -77,17 +77,15 @@ export class WebDropDown extends WebElement {
             const elements: Array<ElementHandle<Element>> = await webPage.getElements(Env.BUTTON_TAGS)
             const dropDowns: Array<WebDropDown> = []
 
-            if(elements){
-                for(const element of elements) {
-                    const dropDown: WebDropDown = new WebDropDown(webPage, element)
-                    await dropDown.init()
+            for(const element of elements) {
+                const dropDown: WebDropDown = new WebDropDown(webPage, element)
+                await dropDown.init()
 
-                    dropDown.question = labeledQuestions.get(dropDown.id)
-                    dropDown.answer = webPage.mappedQA.get(dropDown.question)
+                dropDown.question = labeledQuestions.get(dropDown.id)
+                dropDown.answer = webPage.mappedQA.get(dropDown.question)
 
-                    if(WebElement.shouldHandle(webPage, dropDown)){
-                        dropDowns.push(dropDown)
-                    }
+                if(WebElement.shouldHandle(webPage, dropDown)){
+                    dropDowns.push(dropDown)
                 }
             }
 
