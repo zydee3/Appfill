@@ -3,7 +3,6 @@ import { waitTillHTMLRendered } from '@/Utils/Sleep'
 import { WebNavButton } from '@/WebElements/WebNavButton'
 import { WebTextBox } from '@/WebElements/WebTextBox'
 import { WebDropDown } from '@/WebElements/WebDropDown'
-import * as WebLabel from  '@/WebElements/WebLabel'
 import { WebRadio } from '@/WebElements/WebRadio'
 
 async function handleRadios(webPage: WebPage, labels: Map<string, string>) {
@@ -41,7 +40,7 @@ async function handlePage(webPage: WebPage) {
     await handleNavButtons(webPage)
 
     while (currentURL === webPage.page.url() ) {
-        const labels: Map<string, string> = await WebLabel.readFromPage(webPage)
+        const labels: Map<string, string> = await webPage.getLabels()
         handleRadios(webPage, labels)
         await handleTextBoxes(webPage, labels)
         await handleDropDowns(webPage, labels)

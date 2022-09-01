@@ -1,5 +1,5 @@
 import { Browser, Page } from 'puppeteer'
-import { getElement, getElements } from './Handlers/WebPageParsers'
+import { getElement, getElements, getLabels } from './Handlers/WebPageParsers'
 import { init } from './Handlers/WebPageDefault'
 import { start } from './Handlers/WebPageRunner'
 import { MultiKeyMap } from './Utils/MultiKeyMap'
@@ -34,4 +34,5 @@ export class WebPage {
     // WebPage Parsers
     public getElement = getElement
     public getElements = getElements
+    public getLabels = getLabels
 }
