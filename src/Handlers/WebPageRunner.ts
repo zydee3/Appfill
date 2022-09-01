@@ -92,8 +92,8 @@ async function handlePage(webPage: WebPage): Promise<void> {
  *
  * @export
  * @async
- * @param {WebPage} this binded instance of WebPage
- * @param {string} startURL the website first loaded when chrome is opened.
+ * @param {WebPage} this Current binded instance of WebPage.
+ * @param {string} startURL The website first loaded when chrome is opened.
  * @returns {Promise<void>}
  */
 export async function start(this: WebPage, startURL: string): Promise<void> {
