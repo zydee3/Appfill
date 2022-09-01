@@ -10,9 +10,10 @@ import { WebDummy } from "./WebDummy"
  * Extended wrapper of {@link WebElement} which provides specific support for
  * handling radio choice selections. 
  * 
- * @remarks Each radio option is grouped together under the current instance and
- * stored inside {@link options}. From {@link answer}, the corresponding option
- * is selected if one exists, otherwise nothing happens. In either case, 
+ * @remarks Each radio option is queried by looking for all role=option elements
+ * in in {@link Page}, grouped together under the current instance, and stored 
+ * inside {@link options}. From {@link answer}, the corresponding option is 
+ * selected if one exists, otherwise nothing happens. In either case, 
  * {@link question} is marked as handled. This is based on the assumption that 
  * no new answers are insertted at runtime. In the event a new question is
  * insertted, all questions marked handled are unmarked so no further design

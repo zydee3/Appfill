@@ -9,10 +9,10 @@ import { WebElement } from "./WebElement";
  * handling buttons that are expected to direct the user to another page / url 
  * or another part of the same page.
  * 
- * @remarks Each drop down is queried by looking for all present <button> 
- * elements. For each button found, check if any of the button is defined 
- * under {@link @/data/button-targets.json}. If defined, a sequence must exist. 
- * For each button in the sequence, click the button in order.
+ * @remarks Each nav button is queried by looking for all present <button> 
+ * elements in {@link Page}. For each button found, check if any of the button 
+ * is defined under {@link @/data/button-targets.json}. If defined, a sequence 
+ * must exist. For each button in the sequence, click the button in order.
  * @export
  * @class WebNavButton
  * @typedef {WebNavButton}
