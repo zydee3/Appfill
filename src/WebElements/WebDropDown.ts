@@ -65,7 +65,7 @@ export class WebDropDown extends WebElement {
      * @static
      * @param {WebPage} webPage current working instance of {@link WebPage}.
      * @param {Map<string, string>} labeledQuestions matched labels read from
-     * {@link WebPage.page}. 
+     * {@link Page}. 
      * @returns {Promise<Array<WebDropDown>>} An array of drop down menus that 
      * have not been handled and have non-empty question and answer fields.
      */
