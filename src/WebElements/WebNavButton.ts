@@ -13,7 +13,6 @@ import { WebElement } from "./WebElement";
  * elements. For each button found, check if any of the button is defined 
  * under {@link @/data/button-targets.json}. If defined, a sequence must exist. 
  * For each button in the sequence, click the button in order.
- *
  * @export
  * @class WebNavButton
  * @typedef {WebNavButton}
