@@ -1,10 +1,9 @@
 import { Env } from "@/Env"
 import { WebElement } from "@/WebElements/WebElement"
 import { WebPage } from "@/WebPage"
-import { ElementHandle } from "puppeteer"
+import { ElementHandle, Page } from "puppeteer"
 import { WebElementAttribute } from "./Meta/WebElementAttribute"
 import { WebElementProperty } from "./Meta/WebElementProperty"
-import { WebDummy } from "./WebDummy"
 
 /**
  * Extended wrapper of {@link WebElement} which provides specific support for
@@ -100,17 +99,15 @@ export class WebRadio extends WebElement {
      * @returns {Promise<string>}
      */
     public static async getContainerID(webPage: WebPage, element: ElementHandle<Element>): Promise<string> {
-        let child: WebDummy = new WebDummy(webPage, element)
-        let parent = await child.getParent()
+        let parent = await WebElement.getParent(element)
         
         while(parent){
-            let dummyParent: WebDummy = new WebDummy(webPage, parent)
-            const id: string = await dummyParent.getProperty(WebElementProperty.ID)
+            const id: string = await WebElement.getProperty(parent, WebElementProperty.ID)
             if(id !== '') {
                 return id
             }
 
-            parent = await dummyParent.getParent()
+            parent = await WebElement.getParent(parent)
         }
 
         return ''
@@ -138,10 +135,8 @@ export class WebRadio extends WebElement {
                 break
         }
 
-        const optionDummy: WebDummy = new WebDummy(undefined, undefined)
         for(const option of Array.from(this.options.values())){
-            optionDummy.element = option
-            const id: string = await optionDummy.getProperty(WebElementProperty.ID)
+            const id: string = await WebElement.getProperty(option, WebElementProperty.ID)
             this.webPage.handledQuestions.add(id)
         }
     }
@@ -162,7 +157,6 @@ export class WebRadio extends WebElement {
      * {@link WebRadio}.
      */
     public static async matchFromPageAndLabels(webPage: WebPage, labels: Map<string, string>): Promise<Array<WebRadio>> {
-
         /**
          * Creates a new instance of {@link WebRadio}.
          *
@@ -222,16 +216,16 @@ export class WebRadio extends WebElement {
          * @returns {Promise<boolean>} True if the element should be handled,
          * other wise false.
          */
-        const shouldHandle = async (containerID: string, option: WebDummy): Promise<boolean> => {
+        const shouldHandle = async (page: Page, option: ElementHandle<Element>, containerID: string): Promise<boolean> => {
             if(handled.has(containerID)){
                 return false
             }
 
-            if(await option.getAttribute(WebElementAttribute.AriaChecked) === 'true') {
+            if(await WebElement.getAttribute(page, option, WebElementAttribute.AriaChecked) === 'true') {
                 return false
             }
 
-            if(labels.has(await option.getProperty(WebElementProperty.ID)) === false) {
+            if(labels.has(await WebElement.getProperty(option, WebElementProperty.ID)) === false) {
                 return false
             }
 
@@ -251,15 +245,14 @@ export class WebRadio extends WebElement {
                 continue
             }
             
-            const dummy: WebDummy = new WebDummy(webPage, element)
 
-            if(await shouldHandle(containerID, dummy) === false) {
+            if(await shouldHandle(webPage.page, element, containerID) === false) {
                 handled.add(containerID)
                 radios.delete(containerID)
                 continue
             }
     
-            const optionValue: string = labels.get(await dummy.getProperty(WebElementProperty.ID))
+            const optionValue: string = labels.get(await WebElement.getProperty(element, WebElementProperty.ID))
             const radio: WebRadio = getOrCreate(containerID, containerQuestion)
 
             if(radio){

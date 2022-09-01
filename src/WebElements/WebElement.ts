@@ -124,6 +124,22 @@ export abstract class WebElement {
     }
 
     /**
+     * Returns the associated parent to {@link element} if the parent exists,
+     * otherwise undefined.
+     *
+     * @public
+     * @static
+     * @async
+     * @param {ElementHandle<Element>} element Child element.
+     * @returns {Promise<ElementHandle<Element>>} The associated parent to 
+     * {@link element} if the parent exists, otherwise undefined.
+     */
+    public static async getParent(element: ElementHandle<Element>): Promise<ElementHandle<Element>> {
+        const parent: ElementHandle<ParentNode> = await element.getProperty('parentNode')
+        return parent as ElementHandle<Element> 
+    }
+
+    /**
      * Returns true if the current element being handled has the following:
      *      1. a non-empty question and answer.
      *      2. the answer is not '-ignored-input-fields'.
@@ -171,8 +187,7 @@ export abstract class WebElement {
     }
 
     /**
-     * Returns the associated parent to {@link element} if the parent exists,
-     * otherwise undefined.
+     * Calls {@link getParent}.
      *
      * @public
      * @async
@@ -180,8 +195,7 @@ export abstract class WebElement {
      * {@link element} if the parent exists, otherwise undefined.
      */
     public async getParent(): Promise<ElementHandle<Element>> {
-        const parent: ElementHandle<ParentNode> = await this.element.getProperty('parentNode')
-        return parent as ElementHandle<Element>
+        return await WebElement.getParent(this.element)
     }
 
     /**
