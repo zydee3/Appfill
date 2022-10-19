@@ -1,5 +1,5 @@
 import { Env } from "@/Env";
-import { NavSequence, WebPage } from "@/WebPage";
+import { NavSequence, WebPage } from "@/Handlers/WebPage";
 import { ElementHandle } from "puppeteer";
 import { getAttrByValue } from "./Meta/WebElementAttribute";
 import { WebElement } from "./WebElement";
@@ -111,7 +111,7 @@ export class WebNavButton extends WebElement {
     }
 
     /**
-     * Checks to see if {@link this.webPage.targetNavButtons} contains the 
+     * Checks to see if {@link webPage.targetNavButtons} contains the 
      * current button. If the current button exists, a sequence must exist. The
      * sequence is set and {@link shouldHandle} is set to true.
      *
@@ -134,6 +134,7 @@ export class WebNavButton extends WebElement {
                     this.sequence = sequence.children
                     this.waitForNavigation = sequence.waitForNavigation
                     this.shouldHandle = true
+                    return
                 }
             }
         }

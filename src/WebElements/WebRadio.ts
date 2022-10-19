@@ -1,6 +1,6 @@
 import { Env } from "@/Env"
 import { WebElement } from "@/WebElements/WebElement"
-import { WebPage } from "@/WebPage"
+import { WebPage } from "@/Handlers/WebPage"
 import { ElementHandle, Page } from "puppeteer"
 import { WebElementAttribute } from "./Meta/WebElementAttribute"
 import { WebElementProperty } from "./Meta/WebElementProperty"
@@ -42,7 +42,7 @@ export class WebRadio extends WebElement {
      */
     public override async init(): Promise<void> {
         await super.init()
-        this.options = new Map()
+        this.options = new Map<string, ElementHandle<Element>>()
     }
 
     /**
@@ -56,7 +56,7 @@ export class WebRadio extends WebElement {
      * @param {ElementHandle<Element>} element The check box associated to each 
      * option to be later clicked if the option is selected.
      */
-    private addSelection(optionValue: string, element: ElementHandle<Element>){
+    private addOption(optionValue: string, element: ElementHandle<Element>){
         if(this.options.has(optionValue)){
             console.log("duplicate radio selection: ", optionValue)
         } else if(!element){
@@ -164,10 +164,10 @@ export class WebRadio extends WebElement {
          * @returns {WebRadio} A new instance of {@link WebRadio} with 
          * {@param containerQuestion} as {@link question}.
          */
-        const createRadio = (containerQuestion: string): WebRadio => {
+        const createRadio = async (containerQuestion: string): Promise<WebRadio> => {
             if(containerQuestion){
                 const radio = new WebRadio(webPage, undefined)
-                radio.init()
+                await radio.init()
                 radio.question = containerQuestion
                 return radio
             } 
@@ -186,7 +186,7 @@ export class WebRadio extends WebElement {
          * @param {string} containerQuestion value assigned to {@link question}.
          * @returns {WebRadio} An instance of {@link WebRadio}.
          */
-        const getOrCreate = (containerID: string, containerQuestion: string): WebRadio => {
+        const getOrCreate = async (containerID: string, containerQuestion: string): Promise<WebRadio> => {
             if(!containerQuestion){
                 return undefined
             }
@@ -195,7 +195,7 @@ export class WebRadio extends WebElement {
                 return radios.get(containerID)
             } 
                 
-            const radio: WebRadio = createRadio(containerQuestion)
+            const radio: WebRadio = await createRadio(containerQuestion)
             radios.set(containerID, radio)
             
             return radio
@@ -253,10 +253,10 @@ export class WebRadio extends WebElement {
             }
     
             const optionValue: string = labels.get(await WebElement.getProperty(element, WebElementProperty.ID))
-            const radio: WebRadio = getOrCreate(containerID, containerQuestion)
+            const radio: WebRadio = await getOrCreate(containerID, containerQuestion)
 
             if(radio){
-                radio.addSelection(optionValue, element)
+                radio.addOption(optionValue, element)
             }
         }
         

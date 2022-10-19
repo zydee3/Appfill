@@ -1,4 +1,4 @@
-import { WebPage } from "@/WebPage";
+import { WebPage } from "@/Handlers/WebPage";
 import { ElementHandle, JSHandle, Page } from "puppeteer";
 import { WebElementProperty } from './Meta/WebElementProperty'
 import { WebElementAttribute } from './Meta/WebElementAttribute'
@@ -222,7 +222,6 @@ export abstract class WebElement {
         return ''
     }
 
-
     /**
      * Default implementation for initializing parameters of {@link WebElement}.
      *
@@ -233,7 +232,6 @@ export abstract class WebElement {
     public async init(): Promise<void> {
         this.id = await this.getProperty(WebElementProperty.ID)
     }
-
 
     /**
      * Default implementation for handling the current {@link WebElement}. The
@@ -248,7 +246,6 @@ export abstract class WebElement {
     public async handle(): Promise<void> {
         throw new Error("Method not implemented.");
     }
-
 
     /**
      * Default implementation to return the string value representation of 

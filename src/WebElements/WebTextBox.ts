@@ -1,5 +1,5 @@
 import { Env } from "@/Env";
-import { WebPage } from "@/WebPage";
+import { WebPage } from "@/Handlers/WebPage";
 import { ElementHandle } from "puppeteer";
 import { WebElementProperty } from "./Meta/WebElementProperty";
 import { WebElement } from "./WebElement";

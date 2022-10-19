@@ -1,8 +1,8 @@
 import { Browser, Page } from 'puppeteer'
-import { getElement, getElements, getLabels } from './Handlers/WebPageParsers'
-import { init } from './Handlers/WebPageDefault'
-import { start } from './Handlers/WebPageRunner'
-import { MultiKeyMap } from './Utils/MultiKeyMap'
+import { getElement, getElements, getLabels } from './WebPageParsers'
+import { init } from './WebPageDefault'
+import { start } from './WebPageRunner'
+import { MultiKeyMap } from '../Utils/MultiKeyMap'
 
 export type NavSequence = {
     parent_key: string
@@ -20,6 +20,7 @@ export class WebPage {
     public browser: Browser
     public page: Page
     public lifeCycleID: number
+    public numEduEntered: number
     public handledQuestions: Set<string>
     public handledButtons: Set<string>
     public targetNavButtons: Array<NavButton>

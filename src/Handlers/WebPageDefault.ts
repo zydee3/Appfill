@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs/promises'
 import { Env } from '@/Env'
-import { WebPage } from '@/WebPage'
+import { WebPage } from '@/Handlers/WebPage'
 import puppeteer, { Page } from 'puppeteer'
 import { MultiKeyMap } from '@/Utils/MultiKeyMap'
 
@@ -82,6 +82,7 @@ async function setMappedQA(page: WebPage) {
  */
 export async function init(this: WebPage): Promise<void> {
     this.lifeCycleID = 0
+    this.numEduEntered = 0
     this.handledButtons = new Set<string>()
     this.handledQuestions = new Set<string>()
     this.mappedQA = new MultiKeyMap<string, string>()

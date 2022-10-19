@@ -1,4 +1,4 @@
-import { WebPage } from './WebPage'
+import { WebPage } from './Handlers/WebPage'
 ;(async () => {
     const page: WebPage = new WebPage()
     await page.init()

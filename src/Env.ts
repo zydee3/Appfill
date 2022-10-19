@@ -4,6 +4,7 @@ import { cleanEnv, num, str, bool } from 'envalid'
 
 export const Env = cleanEnv(process.env, {
     NODE_ENV: str(),
+    MAX_STABLE_INPUT_TICKS: num(),
 
     WINDOW_HEIGHT: num(),
     WINDOW_WIDTH: num(),

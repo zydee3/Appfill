@@ -10,5 +10,9 @@
     { "question": ["city"], "answer": "Santa Cruz" },
     { "question": ["state"], "answer": "california" },
     { "question": ["zip", "postal code"], "answer": "95060" },
-    { "question": ["phone number"], "answer": "7072972087" }
+    { "question": ["phone number"], "answer": "7072972087" },
+    { "question": ["school-1", "school-2", "school-3"], "answer": "University of California, Santa Cruz"},
+    { "question": ["degree-1"], "answer": "Masters of Science"},
+    { "question": ["degree-2", "degree-3"], "answer": "Bachelors of Science"},
+    { "question": [""] }
 ]

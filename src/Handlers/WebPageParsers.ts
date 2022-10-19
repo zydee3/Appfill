@@ -1,5 +1,5 @@
 import { ElementHandle } from 'puppeteer'
-import { WebPage } from '@/WebPage'
+import { WebPage } from '@/Handlers/WebPage'
 import { WebTextBox } from '@/WebElements/WebTextBox'
 import { WebElementAttribute } from '@/WebElements/Meta/WebElementAttribute'
 import { WebElementProperty } from '@/WebElements/Meta/WebElementProperty'
